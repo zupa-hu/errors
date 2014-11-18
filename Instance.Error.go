@@ -1,6 +1,9 @@
 
 package errors
 
+// When debugging is turned on, .Error() redirects to .Debug()
+var Debug = false
+// Localize internal error message
 var InternalServerError = "internal server error"
 
 // Format an error message to be returned to the client.
@@ -9,6 +12,13 @@ var InternalServerError = "internal server error"
 // instead. That should only happen for server errors. For client errors,
 // it is caller's responsibility to provide a non-empty error message.
 func (instance *Instance) Error() (string) {
+	if Debug {
+		return instance.Debug()
+	} else {
+		return instance.error()
+	}
+}
+func (instance *Instance) error() (string) {
 	msg := ""
 
 	n := len(instance.stack)
