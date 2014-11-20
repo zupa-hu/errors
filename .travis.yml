@@ -1,0 +1,17 @@
+# Travis CI (http://travis-ci.org/) is a continuous integration
+# service for open source projects.
+
+language: go
+
+go:
+    - 1.3.3
+    - tip
+
+matrix:
+    fast_finish: true
+
+install:
+    - go get -d -v ./... && go build -v .
+
+script:
+    - go test .
