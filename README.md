@@ -125,6 +125,21 @@ fn:  runtime.goexit
 src: /usr/local/go/src/pkg/runtime/proc.c:1445
 ```
 
+### Example - log internal errors
+```go
+Err := doSomething()
+if Err != nil && Err.IsServerError() {
+	// Log internal error, notify sys admin
+}
+```
+
+### Example - temporarily turn client errors into debug messages
+```go
+errors.Debug = true
+// From here on, Err.Error() redirects to Err.Debug()
+// Warning: use for local debugging only
+```
+
 
 # Installation
 
