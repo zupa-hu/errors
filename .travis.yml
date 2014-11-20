@@ -12,7 +12,8 @@ matrix:
 
 
 before_install:
-    - go get -v golang.org/x/tools/cmd/cover
+    # Remove installing code.google.com/p/go.tools/cmd/cover from go1.4
+    - go get -v code.google.com/p/go.tools/cmd/cover || go get -v golang.org/x/tools/cmd/cover
     - go get -v github.com/mattn/goveralls
 
 install:
