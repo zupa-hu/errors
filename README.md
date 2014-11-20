@@ -1,6 +1,7 @@
 # errors
 Golang errors implementation with stack traces and client/server errors.
 
+[![Build Status](https://travis-ci.org/zupa-hu/errors.svg?branch=master)](https://travis-ci.org/zupa-hu/errors)
 
 ### Goal, design principles
 * implement the standard errors interface
