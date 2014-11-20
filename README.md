@@ -3,6 +3,7 @@ Golang errors implementation with stack traces and client/server errors.
 
 [![Build Status](https://travis-ci.org/zupa-hu/errors.svg?branch=master)](https://travis-ci.org/zupa-hu/errors)
 [![Coverage Status](https://img.shields.io/coveralls/zupa-hu/errors.svg)](https://coveralls.io/r/zupa-hu/errors)
+[![GoDoc](https://godoc.org/github.com/zupa-hu/errors?status.svg)](https://godoc.org/github.com/zupa-hu/errors)
 
 ### Goal, design principles
 * implement the standard errors interface

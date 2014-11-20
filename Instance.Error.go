@@ -6,8 +6,8 @@ var Debug = false
 // Localize internal error message
 var InternalServerError = "internal server error"
 
-// Format an error message to be returned to the client.
-// Merge all clientNotes from top to bottom and return it.
+// Format an error message for an untrusted client.
+// Merge all client notes from top of the stack to bottom and return it.
 // Should that be empty, for internal errors, return InternalServerError
 // instead. That should only happen for server errors. For client errors,
 // it is caller's responsibility to provide a non-empty error message.

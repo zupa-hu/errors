@@ -7,8 +7,7 @@ package errors
 // A client error is caused by a client, and so any debug info needs
 // to be sent back to the client, without a stack trace of course.
 // A server error is a bug, and thus debug information MUST NOT be
-// sent back to the client, as it may leak implementation details,
-// thus cause a security hole.
+// sent back to the client, as it may leak implementation details.
 type Instance struct {
 	// Error type
 	typ *Type

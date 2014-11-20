@@ -8,6 +8,7 @@ import (
 var nextId = 1
 var idMutex sync.Mutex
 
+// Create a new error type
 func New() (*Type) {
 	idMutex.Lock()
 	defer idMutex.Unlock()

@@ -1,4 +1,7 @@
 
+// Golang errors implementation with stack traces and client/server errors.
+// 
+// For the package overview, please go to https://github.com/zupa-hu/errors
 package errors
 
 type Error interface {
