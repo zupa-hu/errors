@@ -6,6 +6,7 @@ package errors
 
 type Error interface {
 	Is(*Type) (bool)
+	Type() (*Type)
 	IsClientError() (bool)
 	IsServerError() (bool)
 	Debug() (string)
