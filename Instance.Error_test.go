@@ -14,7 +14,7 @@ func TestInstanceError(t *testing.T) {
 		},
 	}
 	actual := instance.Error()
-	if actual != InternalServerError+"\n" { t.Fatal(actual) }
+	if actual != InternalServerError { t.Fatal(actual) }
 
 
 	// Server error, client note exists
@@ -31,7 +31,7 @@ func TestInstanceError(t *testing.T) {
 	expected := ""+
 		"clientNote1\n"+
 		"clientNote3\n"+
-		"clientNote5\n";
+		"clientNote5";
 	actual = instance.Error()
 	if actual != expected { t.Fatalf("\n[%v]\n[%v]", expected, actual) }
 
@@ -44,6 +44,6 @@ func TestInstanceError(t *testing.T) {
 		},
 	}
 	actual = instance.Error()
-	if actual != "clientNote1\n" { t.Fatal(actual) }
+	if actual != "clientNote1" { t.Fatal(actual) }
 }
 

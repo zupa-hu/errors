@@ -1,6 +1,10 @@
 
 package errors
 
+import(
+	"strings"
+)
+
 // Returns the stack trace decorated with error messages.
 // MUST not be passed back to an untrusted client.
 func (instance *Instance) Debug() (string) {
@@ -17,6 +21,6 @@ func (instance *Instance) Debug() (string) {
 		str += se.String()
 	}
 
-	return str
+	return strings.TrimRight(str, "\n")
 }
 

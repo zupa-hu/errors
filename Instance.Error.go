@@ -1,6 +1,10 @@
 
 package errors
 
+import (
+	"strings"
+)
+
 // When debugging is turned on, .Error() redirects to .Debug()
 var Debug = false
 // Localize internal error message
@@ -34,6 +38,6 @@ func (instance *Instance) error() (string) {
 		msg = InternalServerError + "\n"
 	}
 
-	return msg
+	return strings.TrimRight(msg, "\n")
 }
 

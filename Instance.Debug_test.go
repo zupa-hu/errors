@@ -24,8 +24,8 @@ func TestInstanceDebug(t *testing.T) {
 		"fn:  funcName2\n"+
 		"src: file2:2\n"+
 		"srv: serverNote2\n"+
-		"cli: clientNote2\n"+
-		"\n";
+		"cli: clientNote2"+
+		"";
 	actual := instance.Debug()
 	if actual != expected { t.Fatalf("\n[%v]\n[%v]", expected, actual) }
 }
