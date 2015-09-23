@@ -159,7 +159,7 @@ errors.Debug = true
 var ErrPanic = errors.New()
 
 func FailDoingSg() {
-	panic(ErrPanic.ClientError("panicing!")
+	panic(ErrPanic.ClientError("panicing!"))
 }
 
 func CatchingPanic() (errors.Error) {
