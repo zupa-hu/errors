@@ -13,6 +13,19 @@ Golang errors implementation with stack traces and client/server errors.
 * do not leak implementation details to untrusted clients
 * allow type-checking of errors (package level error types in dependant packages)
 
+### Experimental
+Checking for errors all the time is pain in the ass. Instead of returning them all the time as the
+last argument, call `panic(Err)` instead and catch them with `Catch()`. There is a small performance penalty
+(~0.2us) of using Catch, but when using at the top of a call-chain, it is offset by the reduced overhead of not
+needing to check `if Err != nil { .. }` all the time. Run the benchmarks on your own machine, on my system
+the speed of the 2 ways equaled around 100 function calls. So, if there are more than 100 func calls inside
+the call of Catch, it starts to improve speed instead of degrading it. In the order of above 1000 calls,
+function calling overhead dropped by 30%.
+
+Note that using `panic()` is not idiomatic go. Yet if I can write 50% less code, that is easier to read, and
+doing it is overall way more enjoyable, I'm willing to explore new grounds. The rules of what is idiomatic
+tend to change over time anyway.
+
 
 # Examples
 ### Example - simple client error
@@ -139,6 +152,21 @@ if Err != nil && Err.IsServerError() {
 errors.Debug = true
 // From here on, Err.Error() redirects to Err.Debug()
 // Warning: use for local debugging only
+```
+
+### Example - panic instead of returning errors, catch them
+```go
+var ErrPanic = errors.New()
+
+func FailDoingSg() {
+	panic(ErrPanic.ClientError("panicing!")
+}
+
+func CatchingPanic() (errors.Error) {
+	return Catch(func() {
+		FailDoingSg()
+	})
+}
 ```
 
 
