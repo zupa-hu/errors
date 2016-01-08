@@ -18,3 +18,21 @@ type Instance struct {
 	stack []stackEntry
 }
 
+
+// Shorthand to New().ClientError()
+func Client(clientNote string) (Error) {
+	return New().ClientError(clientNote)
+}
+// Shorthand to New().ClientErrorf()
+func Clientf(template string, args ...interface{}) (Error) {
+	return New().ClientErrorf(template, args)
+}
+// Shorthand to New().ServerError()
+func Server(serverNote string) (Error) {
+	return New().ServerError(serverNote)
+}
+// Shorthand to New().ServerErrorf()
+func Serverf(template string, args ...interface{}) (Error) {
+	return New().ServerErrorf(template, args)
+}
+
