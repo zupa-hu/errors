@@ -25,7 +25,7 @@ func Client(clientNote string) (Error) {
 }
 // Shorthand to New().ClientErrorf()
 func Clientf(template string, args ...interface{}) (Error) {
-	return New().ClientErrorf(template, args)
+	return New().ClientErrorf(template, args...)
 }
 // Shorthand to New().ServerError()
 func Server(serverNote string) (Error) {
@@ -33,6 +33,6 @@ func Server(serverNote string) (Error) {
 }
 // Shorthand to New().ServerErrorf()
 func Serverf(template string, args ...interface{}) (Error) {
-	return New().ServerErrorf(template, args)
+	return New().ServerErrorf(template, args...)
 }
 
