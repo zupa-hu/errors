@@ -4,15 +4,16 @@ package errors
 import (
 	"testing"
 	"strings"
+	"fmt"
 )
 
 type CatchFatal struct {
 	caught bool
 	s string
 }
-func (c *CatchFatal) Fatal(s string) {
+func (c *CatchFatal) Fatal(s ...interface{}) {
 	c.caught = true
-	c.s = s
+	c.s = fmt.Sprint(s...)
 }
 
 func TestAssertClientError_nil(t *testing.T) {
