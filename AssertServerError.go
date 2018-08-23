@@ -17,7 +17,7 @@ func AssertServerError(t Fataler, Err Error, expErr string) {
 		return
 	}
 
-	actErr := Err.Error()
+	actErr := Err.Debug()
 	if ! strings.Contains(actErr, expErr) {
 		t.Fatal(Serverf("\nexpErr[%v]\nactErr[%v]", expErr, actErr).Debug())
 	}
