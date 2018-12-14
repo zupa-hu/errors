@@ -31,7 +31,7 @@ func BenchmarkCatch_okCatch(b *testing.B) {
 
 
 func BenchmarkCatch_errReturn(b *testing.B) {
-	Err := New().ServerError("woof!")
+	Err := Type("ErrTest").ServerError("woof!")
 	var Err2 Error
 
 	for i:=0; i<b.N; i++ {
@@ -43,7 +43,7 @@ func BenchmarkCatch_errReturn(b *testing.B) {
 	_ = Err2
 }
 func BenchmarkCatch_errCatch(b *testing.B) {
-	Err := New().ServerError("woof!")
+	Err := Type("ErrTest").ServerError("woof!")
 	var Err2 Error
 
 	for i:=0; i<b.N; i++ {

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var testErrInstanceServerNotef = New()
+var testErrInstanceServerNotef = Type("testErrInstanceServerNotef")
 func returnErrorInstanceServerNotef() (*Instance) {
 	skip, internal, serverNote, clientNote := 0, true, "", ""
 	return testErrInstanceServerNotef.newInstance(skip, internal, serverNote, clientNote)

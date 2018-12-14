@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var testErrTypeNewInstance = New()
+var testErrTypeNewInstance = Type("testErrTypeNewInstance")
 func returnErrorInstance() (*Instance) {
 	skip, internal := 0, true
 	return testErrTypeNewInstance.newInstance(skip, internal, "serverNote", "clientNote")

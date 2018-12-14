@@ -5,11 +5,11 @@ import (
 	"runtime"
 )
 
-// Create a new error instance the current stack recorded.
+// Create a new error instance with the current stack recorded.
 // Add a message at the topmost stack entry.
 // This is an internal method, skip `skip` number of stack entries
 // to ignore stack entries internal to this package.
-func (t *Type) newInstance(skip int, internal bool, serverNote, clientNote string) (*Instance) {
+func (t Type) newInstance(skip int, internal bool, serverNote, clientNote string) (*Instance) {
 	// Record program counters. This enforces a max stack depth of 256.
 	// Not a big issue as it is quite big, plus at the time of this writing,
 	// Golang itself imposes a lower limit, 32.

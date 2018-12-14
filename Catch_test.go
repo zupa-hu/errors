@@ -12,7 +12,7 @@ func TestCatch_ok(t *testing.T) {
 	if Err != nil { t.Fatal(Err) }
 }
 func TestCatch_error(t *testing.T) {
-	ErrTest := New()
+	ErrTest := Type("ErrTest")
 	Err := Catch(func() {
 		panic(ErrTest.ServerError("woof!"))
 	})

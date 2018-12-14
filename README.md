@@ -30,7 +30,7 @@ tend to change over time anyway.
 # Examples
 ### Example - simple client error
 ```go
-var ErrInvalidPassword = errors.New()
+var ErrInvalidPassword = errors.Type("ERR_INVALID_PASSWORD")
 
 func ReturnError(pw string) (errors.Error) {
 	return ErrInvalidPassword.ClientError("invalid password")
@@ -56,7 +56,7 @@ if Err.Is(ErrInvalidPassword) {
 
 ### Example - client error with debug message
 ```go
-var ErrPwTooShort = errors.New()
+var ErrPwTooShort = errors.Type("ErrPwTooShort")
 const MIN_LEN_PW = 8
 
 func PasswordTooShort(pw string) (errors.Error) {
@@ -69,7 +69,7 @@ func PasswordTooShort(pw string) (errors.Error) {
 
 ### Example - server error with debug message
 ```go
-var ErrFooNotBar = errors.New()
+var ErrFooNotBar = errors.Type("ErrFooNotBar")
 
 func ExpectBar(foo string) (errors.Error) {
 	if foo != "bar" {
@@ -105,7 +105,7 @@ src: /usr/local/go/src/pkg/runtime/proc.c:1445
 
 ### Example - decorate error object with custom client/server messages
 ```go
-var ErrDecorate := errors.New()
+var ErrDecorate := errors.Type("ErrDecorate")
 func ReturnOriginalError() (errors.Error) {
 	return ErrDecorate.ServerError("original error message")
 }
@@ -156,7 +156,7 @@ errors.Debug = true
 
 ### Example - panic instead of returning errors, catch them
 ```go
-var ErrPanic = errors.New()
+var ErrPanic = errors.Type("ErrPanic")
 
 func FailDoingSg() {
 	panic(ErrPanic.ClientError("panicing!"))

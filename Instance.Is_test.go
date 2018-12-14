@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-var testErrTestInstanceIs = New()
-var testErrTestInstanceIsNot = New()
+var testErrTestInstanceIs = Type("ERROR_TYPE_FOO")
+var testErrTestInstanceIsNot = Type("ERROR_TYPE_BAR")
 
 func TestInstanceIs(t *testing.T) {
 	instance := testErrTestInstanceIs.ClientError("")

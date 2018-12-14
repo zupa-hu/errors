@@ -10,7 +10,7 @@ package errors
 // sent back to the client, as it may leak implementation details.
 type Instance struct {
 	// Error type
-	typ *Type
+	typ Type
 	// Server errors are internal errors, client errors are not
 	internal bool
 	// Recorded stack
@@ -18,21 +18,20 @@ type Instance struct {
 	stack []stackEntry
 }
 
-
 // Shorthand to New().ClientError()
 func Client(clientNote string) (Error) {
-	return New().ClientError(clientNote)
+	return ErrGeneric.ClientError(clientNote)
 }
 // Shorthand to New().ClientErrorf()
 func Clientf(template string, args ...interface{}) (Error) {
-	return New().ClientErrorf(template, args...)
+	return ErrGeneric.ClientErrorf(template, args...)
 }
 // Shorthand to New().ServerError()
 func Server(serverNote string) (Error) {
-	return New().ServerError(serverNote)
+	return ErrGeneric.ServerError(serverNote)
 }
 // Shorthand to New().ServerErrorf()
 func Serverf(template string, args ...interface{}) (Error) {
-	return New().ServerErrorf(template, args...)
+	return ErrGeneric.ServerErrorf(template, args...)
 }
 

@@ -6,3 +6,5 @@ const (
 	MB = 1024 * KB
 )
 
+var ErrGeneric = Type("GENERIC")
+

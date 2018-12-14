@@ -1,7 +1,7 @@
 
 package errors
 
-var ErrCatch = New()
+var ErrCatch = Type("ErrCatch")
 
 func Catch(cb func()) (Err Error) {
 	defer func() {

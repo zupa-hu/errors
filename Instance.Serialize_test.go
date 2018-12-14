@@ -3,11 +3,12 @@ package errors
 
 import (
 	"testing"
+	"reflect"
 )
 
 func TestInstanceSerialize(t *testing.T) {
 	instance := &Instance{
-		typ: &Type{ id: 123 },
+		typ: "foo",
 		internal: true,
 		stack: []stackEntry{
 			newStackEntry("file1", 1, "funcName1", "serverNote1", "clientNote1"),
@@ -16,7 +17,7 @@ func TestInstanceSerialize(t *testing.T) {
 	}
 
 	exp := []byte{
-		0, 0, 0, 123,
+		0, 3, 'f', 'o', 'o',
 		1,
 		0, 0, 0, 104,
 			0, 0, 0, 48,
@@ -44,8 +45,11 @@ func TestInstanceSerialize(t *testing.T) {
 	restoredInstance, Err := Deserialize(act)
 	if Err != nil { t.Fatal(Err.Debug()) }
 
-	// Re-serialize -- that's the easiest way to make sure we get
-	// what we started with, as Instance.typ uses a pointer
+	if ! reflect.DeepEqual(instance, restoredInstance) {
+		t.Fatal(instance, restoredInstance)
+	}
+
+	// Re-serialize -- double check we end up with the same structure
 	act2, Err := restoredInstance.Serialize()
 	if Err != nil { t.Fatal(Err) }
 	if string(exp) != string(act2) {

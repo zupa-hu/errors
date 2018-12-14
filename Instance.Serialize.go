@@ -9,7 +9,8 @@ import ()
 // deserializing an error instance will break the error type.
 func (instance *Instance) Serialize() (b []byte, Err Error) {
 	// typ
-	b = Serializer{}.AddInt32(b, instance.typ.id)
+	b, Err = Serializer{}.AddString2(b, string(instance.typ))
+	if Err != nil { return nil, Err }
 
 	// internal
 	b = Serializer{}.AddBool(b, instance.internal)
@@ -50,7 +51,7 @@ func (instance *Instance) Serialize() (b []byte, Err Error) {
 
 func Deserialize(b []byte) (instance *Instance, Err Error) {
 	// typ
-	b, typ, Err := Serializer{}.EatInt32(b)
+	b, typStr, Err := Serializer{}.EatString2(b)
 	if Err != nil { return nil, Err }
 
 	// internal
@@ -94,7 +95,7 @@ func Deserialize(b []byte) (instance *Instance, Err Error) {
 	}
 
 	instance = &Instance{
-		typ: &Type{ id: typ },
+		typ: Type(typStr),
 		internal: internal,
 		stack: stack,
 	}
