@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-var nextId = 1
+var nextId int32 = 1
 var idMutex sync.Mutex
 
 // Create a new error type
