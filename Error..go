@@ -11,6 +11,7 @@ type Error interface {
 	IsServerError() (bool)
 	Debug() (string)
 	Error() (string)
+	Serialize() ([]byte, Error)
 	ClientNote(msg string) (Error)
 	ClientNotef(template string, args ...interface{}) (Error)
 	ServerNote(msg string) (Error)
