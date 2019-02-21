@@ -5,7 +5,7 @@ Golang errors implementation with stack traces and client/server errors.
 [![Coverage Status](https://img.shields.io/coveralls/zupa-hu/errors.svg)](https://coveralls.io/r/zupa-hu/errors)
 [![GoDoc](https://godoc.org/github.com/zupa-hu/errors?status.svg)](https://godoc.org/github.com/zupa-hu/errors)
 
-### Goal, design principles
+## Goal, design principles
 * implement the standard errors interface
 * type safe, no magic, no side effects
 * offer stack traces
@@ -13,22 +13,228 @@ Golang errors implementation with stack traces and client/server errors.
 * do not leak implementation details to untrusted clients
 * allow type-checking of errors (package level error types in dependant packages)
 
-### Experimental
-Checking for errors all the time is pain in the ass. Instead of returning them all the time as the
-last argument, call `panic(Err)` instead and catch them with `Catch()`. There is a small performance penalty
-(~0.2us) of using Catch, but when using at the top of a call-chain, it is offset by the reduced overhead of not
-needing to check `if Err != nil { .. }` all the time. Run the benchmarks on your own machine, on my system
-the speed of the 2 ways equaled around 100 function calls. So, if there are more than 100 func calls inside
-the call of Catch, it starts to improve speed instead of degrading it. In the order of above 1000 calls,
-function calling overhead dropped by 30%.
+## Experimental error handling mechanism
 
-Note that using `panic()` is not idiomatic go. Yet if I can write 50% less code, that is easier to read, and
-doing it is overall way more enjoyable, I'm willing to explore new grounds. The rules of what is idiomatic
-tend to change over time anyway.
+This package comes with an experimental error handling mechanism for Go that very interestingly seem to check
+all the requirements boxes:
 
+- Go v1.* compatible - use it today
+- type safe
+- enjoy the simplicity and selfdocumenting nature of returned errors
+- no need to actually return the errors
+- faster then returning errors
+
+**Impossible. Or is it?**
+
+The trick is that instead of returning errors, we can pass in error contexts.
+
+### Example 1
+
+**Before**
+
+```go
+// Function definition
+func Foo(input string) (output string, Err errors.Error) {
+	if input == "foo" {
+		return "", errors.Client("you can't use the word foo")
+	}
+
+	return input, nil
+}
+
+// Function usage
+output, Err := Foo("input")
+if Err != nil {
+	log.Fatal(Err)
+}
+...
+```
+
+**New approach**
+
+Here is how you would use it in most of the places:
+
+```go
+// Function definition
+func Foo(e E, input string) (output string) {
+	if input == "foo" {
+		e.Client("you can't use the word foo")
+	}
+
+	return input
+}
+
+// Function usage
+output := Foo(e, "input")
+```
+
+I said 99% because at the very top of the call chain, you have to create an error context and handle it like so:
+
+```go
+Err := errors.InContext(func(e E) {
+	output := Foo(e, "input")
+	...
+})
+if Err != nil {
+	log.Fatal(Err)
+}
+```
+
+Also, `E` is a type alias that you may want to set up 1x in all your packages for convenience.
+It is a shorthand for `*errors.Context`. Of course, you can use that latter as well.
+
+```go
+type E = *errors.Context
+```
+
+**In the examples below, I will leave out the `errors.InContext()` wrapper because you won't see it in most code segments.**
+
+## Example 2
+
+Let's see an example with more function calls.
+
+**Before**
+
+```go
+func ManyFoos(input string) (string, errors.Error)
+	result := ""
+
+	output, Err := Foo(input)
+	if Err != nil {
+		return "", Err
+	}
+	result += output
+
+	output, Err = Foo(input)
+	if Err != nil {
+		return "", Err
+	}
+	result += output
+
+	output, Err = Foo(input)
+	if Err != nil {
+		return "", Err
+	}
+	result += output
+
+	output, Err = Foo(input)
+	if Err != nil {
+		return "", Err
+	}
+	result += output
+
+	return result, nil
+}
+
+output, Err := Foo("input")
+if Err != nil {
+	log.Fatal(Err)
+}
+```
+
+**New Approach**
+
+```go
+func ManyFoos(e E, input string) (string)
+	result := ""
+
+	result += Foo(e, input)
+	result += Foo(e, input)
+	result += Foo(e, input)
+	result += Foo(e, input)
+
+	return result
+}
+
+output := Foo(e, "input")
+```
+
+### Example 3 - chaining
+
+**Before**
+
+```go
+func (s *Storage) Get(key string) (value string, Err errors.Error) {
+	if key == "invalid" {
+		reutrn "", errors.Clientf("invalid key [%v]", key)
+	}
+	return s[key], nil
+}
+func (s *Storage) Set(key, value string) (Err errors.Error) {
+	_, exists := s[key]
+	if exists {
+		return errors.Clientg("key is already set [%v]", key)
+	}
+	s[key] = value
+	return nil
+}
+
+s := NewStorage()
+Err := s.Set("key", "value")
+if Err != nil {
+	log.Fatal(Err)
+}
+value, Err := s.Get("key")
+if Err != nil {
+	log.Fatal(Err)
+}
+
+fmt.Println(value)
+```
+
+**New Approach**
+
+```go
+func (s *Storage) Get(e E, key string) (value string) {
+	if key == "invalid" {
+		e.Clientf("invalid key [%v]", key)
+	}
+	return s[key]
+}
+func (s *Storage) Set(e E, key, value string) {
+	_, exists := s[key]
+	if exists {
+		e.Clientg("key is already set [%v]", key)
+	}
+	s[key] = value
+}
+
+s := NewStorage()
+s.Set(e, "key", "value")
+value := s.Get(e, "key")
+
+fmt.Println(value)
+```
+
+### Enjoy the simplicity and selfdocumenting nature of returned errors
+
+Because an error context is passed in, it clearly documents that the function call may result in an error.
+That's equal to returning an error. If, as a caller, you want to handle the error at any level, just
+create a new error context:
+
+```go
+var output string
+Err := errors.InContext(func(e E) {
+	b = Foo(e, "input")
+})
+// output, Err - both available here
+```
+
+### Faster then returning errors
+
+Checking `if Err != nil { ... }` everywhere has a cost. On my machine, it's 0.25ns per check.
+Setting up an error context has a cost. On my machine, it's around 100ns per context.
+
+This means if you use a context in a place where your app checks `if Err != nil { ... }` more then 400 times,
+this is actually faster. That will most likely be the case in any real world program.
+
+
+-- End of experimental error contexts. --
+
+----
 
 # Examples
-### Example - simple client error
+## Example - simple client error
 ```go
 var ErrInvalidPassword = errors.Type("ERR_INVALID_PASSWORD")
 
@@ -37,7 +243,7 @@ func ReturnError(pw string) (errors.Error) {
 }
 ```
 
-### Example - returning error message to client
+## Example - returning error message to client
 ```go
 Err := ReturnError(password)
 if Err != nil {
@@ -46,7 +252,7 @@ if Err != nil {
 }
 ```
 
-### Example - checking error agains type
+## Example - checking error agains type
 ```go
 Err := ReturnError(password)
 if Err.Is(ErrInvalidPassword) {
@@ -54,7 +260,7 @@ if Err.Is(ErrInvalidPassword) {
 }
 ```
 
-### Example - client error with debug message
+## Example - client error with debug message
 ```go
 var ErrPwTooShort = errors.Type("ErrPwTooShort")
 const MIN_LEN_PW = 8
@@ -67,7 +273,7 @@ func PasswordTooShort(pw string) (errors.Error) {
 }
 ```
 
-### Example - server error with debug message
+## Example - server error with debug message
 ```go
 var ErrFooNotBar = errors.Type("ErrFooNotBar")
 
@@ -79,7 +285,7 @@ func ExpectBar(foo string) (errors.Error) {
 }
 ```
 
-### Example - print debug info for trusted client
+## Example - print debug info for trusted client
 ```go
 Err := ExpectBar("oh")
 if Err != nil {
@@ -103,7 +309,7 @@ fn:  runtime.goexit
 src: /usr/local/go/src/pkg/runtime/proc.c:1445
 ```
 
-### Example - decorate error object with custom client/server messages
+## Example - decorate error object with custom client/server messages
 ```go
 var ErrDecorate := errors.Type("ErrDecorate")
 func ReturnOriginalError() (errors.Error) {
@@ -139,7 +345,7 @@ fn:  runtime.goexit
 src: /usr/local/go/src/pkg/runtime/proc.c:1445
 ```
 
-### Example - log internal errors
+## Example - log internal errors
 ```go
 Err := doSomething()
 if Err != nil && Err.IsServerError() {
@@ -147,14 +353,14 @@ if Err != nil && Err.IsServerError() {
 }
 ```
 
-### Example - temporarily turn client errors into debug messages
+## Example - temporarily turn client errors into debug messages
 ```go
 errors.Debug = true
 // From here on, Err.Error() redirects to Err.Debug()
 // Warning: use for local debugging only
 ```
 
-### Example - panic instead of returning errors, catch them
+## Example - panic instead of returning errors, catch them
 ```go
 var ErrPanic = errors.Type("ErrPanic")
 

@@ -31,7 +31,7 @@ func BenchmarkOk_context(b *testing.B) {
 	var Err Error
 
 	for i:=0; i<b.N; i++ {
-		Err = InContext(func(e Context) {
+		Err = InContext(func(e *Context) {
 			// NOP
 		})
 	}
@@ -71,7 +71,7 @@ func BenchmarkErr_context(b *testing.B) {
 	var Err2 Error
 
 	for i:=0; i<b.N; i++ {
-		Err2 = InContext(func(e Context) {
+		Err2 = InContext(func(e *Context) {
 			e.Throw(Err)
 		})
 	}
@@ -143,7 +143,7 @@ func BenchmarkDeep_context(b *testing.B) {
 	var Err Error
 
 	for i:=0; i<b.N; i++ {
-		Err = InContext(func(e Context) {
+		Err = InContext(func(e *Context) {
 			func() {
 				func() {
 					func() {
@@ -215,7 +215,7 @@ func BenchmarkUseFulMany_10_context(b *testing.B) {
 	var Err Error
 
 	for i:=0; i<b.N; i++ {
-		Err = InContext(func(e Context) {
+		Err = InContext(func(e *Context) {
 			for j:=0; j<10; j++ {
 				bar := func(n int) (string) {
 					if n == 99999999 {
@@ -276,7 +276,7 @@ func BenchmarkUseFulMany_100_context(b *testing.B) {
 	var Err Error
 
 	for i:=0; i<b.N; i++ {
-		Err = InContext(func(e Context) {
+		Err = InContext(func(e *Context) {
 			for j:=0; j<100; j++ {
 				bar := func(n int) (string) {
 					if n == 99999999 {
@@ -337,7 +337,7 @@ func BenchmarkUseFulMany_1000_context(b *testing.B) {
 	var Err Error
 
 	for i:=0; i<b.N; i++ {
-		Err = InContext(func(e Context) {
+		Err = InContext(func(e *Context) {
 			for j:=0; j<1000; j++ {
 				bar := func(n int) (string) {
 					if n == 99999999 {
@@ -398,7 +398,7 @@ func BenchmarkUseFulMany_10000_context(b *testing.B) {
 	var Err Error
 
 	for i:=0; i<b.N; i++ {
-		Err = InContext(func(e Context) {
+		Err = InContext(func(e *Context) {
 			for j:=0; j<10000; j++ {
 				bar := func(n int) (string) {
 					if n == 99999999 {

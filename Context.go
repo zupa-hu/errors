@@ -4,9 +4,6 @@ package errors
 import ()
 
 type Context struct {
-	Data *ContextData
-}
-type ContextData struct {
 	Err Error
 }
 
@@ -15,10 +12,8 @@ type _Catch struct {}
 var ErrContextUncaught = Type("ErrContextUncaught")
 var ErrNoteOnNoError = Type("ErrNoteOnNoError")
 
-func InContext(cb func(e Context)) (Err Error) {
-	e := Context{
-		Data: &ContextData{},
-	}
+func InContext(cb func(e *Context)) (Err Error) {
+	e := &Context{}
 
 	defer func() {
 		err := recover()
@@ -26,7 +21,7 @@ func InContext(cb func(e Context)) (Err Error) {
 
 		_, ok := err.(_Catch)
 		if ok {
-			Err = e.Data.Err
+			Err = e.Err
 			return
 		}
 
@@ -45,50 +40,50 @@ func InContext(cb func(e Context)) (Err Error) {
 }
 
 func (e *Context) Throw(Err Error) {
-	e.Data.Err = Err
+	e.Err = Err
 	panic(_Catch{})
 }
 func (e *Context) Handle(cb func()) {
-	if e.Data.Err != nil {
+	if e.Err != nil {
 		cb()
 	}
 }
 
 func (e *Context) ClientNote(msg string) {
-	if e.Data.Err == nil {
+	if e.Err == nil {
 		Err := ErrNoteOnNoError.ServerError("unexpected client note on non-existent error")
 		Err.ClientNote(msg)
 		e.Throw(Err)
 		return
 	}
-	e.Data.Err = e.Data.Err.ClientNote(msg)
+	e.Err = e.Err.ClientNote(msg)
 }
 func (e *Context) ClientNotef(template string, args... interface{}) {
-	if e.Data.Err == nil {
+	if e.Err == nil {
 		Err := ErrNoteOnNoError.ServerError("unexpected client note on non-existent error")
 		Err.ClientNotef(template, args...)
 		e.Throw(Err)
 		return
 	}
-	e.Data.Err = e.Data.Err.ClientNotef(template, args...)
+	e.Err = e.Err.ClientNotef(template, args...)
 }
 func (e *Context) ServerNote(msg string) {
-	if e.Data.Err == nil {
+	if e.Err == nil {
 		Err := ErrNoteOnNoError.ServerError("unexpected server note on non-existent error")
 		Err.ServerNote(msg)
 		e.Throw(Err)
 		return
 	}
-	e.Data.Err = e.Data.Err.ServerNote(msg)
+	e.Err = e.Err.ServerNote(msg)
 }
 func (e *Context) ServerNotef(template string, args... interface{}) {
-	if e.Data.Err == nil {
+	if e.Err == nil {
 		Err := ErrNoteOnNoError.ServerError("unexpected server note on non-existent error")
 		Err.ServerNotef(template, args...)
 		e.Throw(Err)
 		return
 	}
-	e.Data.Err = e.Data.Err.ServerNotef(template, args...)
+	e.Err = e.Err.ServerNotef(template, args...)
 }
 
 func (e *Context) Client(clientNote string) {
