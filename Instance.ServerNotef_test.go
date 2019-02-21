@@ -5,23 +5,22 @@ import (
 	"testing"
 )
 
-var testErrInstanceServerNotef = Type("testErrInstanceServerNotef")
 func returnErrorInstanceServerNotef() (*Instance) {
 	skip, internal, serverNote, clientNote := 0, true, "", ""
-	return testErrInstanceServerNotef.newInstance(skip, internal, serverNote, clientNote)
+	return ErrGeneric.newInstance(skip, internal, serverNote, clientNote)
 }
 
 func TestInstanceServerNotef(t *testing.T) {
 	instance := returnErrorInstanceServerNotef()
 
-	se := instance.stack[1]
-	if se.clientNote != "" { t.Fatal(se.clientNote) }
-	if se.serverNote != "" { t.Fatal(se.serverNote) }
-
 	instance.ServerNotef("format [%s]", "serverNote1")
+	if instance.serverNotes != "format [serverNote1]" {
+		t.Fatal(instance.serverNotes)
+	}
 
-	se = instance.stack[1]
-	if se.clientNote != "" { t.Fatal(se.clientNote) }
-	if se.serverNote != "format [serverNote1]" { t.Fatal(se.serverNote) }
+	instance.ServerNotef("number [%v]", 2)
+	if instance.serverNotes != "format [serverNote1]\nnumber [2]" {
+		t.Fatal(instance.serverNotes)
+	}
 }
 

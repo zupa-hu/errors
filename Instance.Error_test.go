@@ -17,7 +17,19 @@ func TestInstanceError(t *testing.T) {
 	if actual != InternalServerError { t.Fatal(actual) }
 
 
-	// Server error, client note exists
+	// Server error, client notes on instance
+	instance = &Instance{
+		internal: true,
+		stack: []stackEntry{
+			stackEntry{},
+		},
+		clientNotes: "client-notes",
+	}
+	actual = instance.Error()
+	if actual != InternalServerError+"\nclient-notes" { t.Fatal(actual) }
+
+
+	// Server error, client note exists on stack and on instance
 	instance = &Instance{
 		internal: true,
 		stack: []stackEntry{
@@ -27,11 +39,14 @@ func TestInstanceError(t *testing.T) {
 			stackEntry{ clientNote:"" },
 			stackEntry{ clientNote:"clientNote5" },
 		},
+		clientNotes: "clientNote-extra",
 	}
 	expected := ""+
+		"internal server error\n"+
 		"clientNote1\n"+
 		"clientNote3\n"+
-		"clientNote5";
+		"clientNote5\n"+
+		"clientNote-extra";
 	actual = instance.Error()
 	if actual != expected { t.Fatalf("\n[%v]\n[%v]", expected, actual) }
 

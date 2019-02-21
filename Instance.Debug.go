@@ -10,7 +10,7 @@ import(
 func (instance *Instance) Debug() (string) {
 	str := ""
 	if instance.internal {
-		str += "internal error:\n"+
+		str += "internal server error:\n"+
 			"\n"
 	} else {
 		str += "client error:\n"+
@@ -19,6 +19,13 @@ func (instance *Instance) Debug() (string) {
 
 	for _, se := range instance.stack {
 		str += se.String()
+	}
+
+	if instance.clientNotes != "" {
+		str += instance.clientNotes + "\n"
+	}
+	if instance.serverNotes != "" {
+		str += instance.serverNotes + "\n"
 	}
 
 	return strings.TrimRight(str, "\n")

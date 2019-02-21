@@ -25,6 +25,10 @@ func (instance *Instance) Error() (string) {
 func (instance *Instance) error() (string) {
 	msg := ""
 
+	if instance.internal {
+		msg += InternalServerError + "\n"
+	}
+
 	n := len(instance.stack)
 	var se stackEntry
 	for i:=0; i<n; i++ {
@@ -34,8 +38,8 @@ func (instance *Instance) error() (string) {
 		}
 	}
 
-	if instance.internal && (msg == "") {
-		msg = InternalServerError + "\n"
+	if instance.clientNotes != "" {
+		msg += instance.clientNotes + "\n"
 	}
 
 	return strings.TrimRight(msg, "\n")

@@ -16,6 +16,10 @@ type Instance struct {
 	// Recorded stack
 	// The first entry is the oldest, last entry is deepest in the stack.
 	stack []stackEntry
+	// clientNotes holds debug info for clients which can be added at any level along the chain
+	clientNotes string
+	// serverNotes holds internal debug info which can be added at any level along the chain
+	serverNotes string
 }
 
 // Shorthand to New().ClientError()
