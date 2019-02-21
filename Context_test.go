@@ -5,10 +5,8 @@ import (
 	"testing"
 )
 
-type E = *Context
-
 func TestContext_ok(t *testing.T) {
-	Err := InContext(func(e E) {
+	Err := InContext(func(e *Context) {
 		// NOP
 	})
 	if Err != nil { t.Fatal(Err) }
