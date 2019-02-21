@@ -23,6 +23,7 @@ all the requirements boxes:
 - enjoy the simplicity and selfdocumenting nature of returned errors
 - no need to actually return the errors
 - faster then returning errors
+- feature parity with the Go v2 error handling draft
 
 **Impossible. Or is it?**
 
@@ -68,7 +69,7 @@ func Foo(e E, input string) (output string) {
 output := Foo(e, "input")
 ```
 
-I said 99% because at the very top of the call chain, you have to create an error context and handle it like so:
+I said most of the places because at the very top of the call chain, you have to create an error context and handle it like so:
 
 ```go
 Err := errors.InContext(func(e E) {
@@ -200,8 +201,7 @@ func (s *Storage) Set(e E, key, value string) {
 }
 
 s := NewStorage()
-s.Set(e, "key", "value")
-value := s.Get(e, "key")
+value := s.Set(e, "key", "value").Get(e, "key")
 
 fmt.Println(value)
 ```
@@ -215,10 +215,14 @@ create a new error context:
 ```go
 var output string
 Err := errors.InContext(func(e E) {
-	b = Foo(e, "input")
+	output = Foo(e, "input")
 })
 // output, Err - both available here
 ```
+
+Note that this approach is not uncontrolled as `panic()`. You can `panic()` anywhere, but with this approach,
+you can only "throw" errors where an error context is available, which means some codepath is guaranteed
+to be expecting it.
 
 ### Faster then returning errors
 
@@ -228,6 +232,51 @@ Setting up an error context has a cost. On my machine, it's around 100ns per con
 This means if you use a context in a place where your app checks `if Err != nil { ... }` more then 400 times,
 this is actually faster. That will most likely be the case in any real world program.
 
+### Feature parity with the Go v2 error handling draft
+
+The Go v2 error handling draft includes a `handle` keyword that defines a code block for error handling.
+
+**Example Go v2 draft compatible code:**
+
+```go
+func oops() (string, error) {
+	if true {
+		return "", errors.Client("oops")
+	}
+	return "keep calm"
+}
+
+func Foo(input string) (output string, err error) {
+    handle err {
+        // do something
+    }
+
+    return check oops()
+}
+
+result := check Foo("input")
+```
+
+**This package**
+
+```go
+func oops(e E) (string) {
+	if true {
+		e.Client("oops")
+	}
+	return "keep calm"
+}
+
+func Foo(e E, input string) (output string) {
+    defer e.Handle(func() {
+        // e.Err is the error object - do something
+    })
+
+    return oops(e)
+}
+
+result := Foo(e, "input")
+```
 
 -- End of experimental error contexts. --
 
