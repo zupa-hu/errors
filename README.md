@@ -18,12 +18,11 @@ Golang errors implementation with stack traces and client/server errors.
 This package comes with an experimental error handling mechanism for Go that very interestingly seem to check
 all the requirements boxes:
 
-- Go v1.* compatible - use it today
-- type safe
-- enjoy the simplicity and selfdocumenting nature of returned errors
-- no need to actually return the errors
-- faster then returning errors
+- no need to write `if err != nil {...}` all the time
+- equally robust & self-documenting as returned errors are
+- no performance penalty
 - feature parity with the Go v2 error handling draft
+- Go v1.* compatible - use it today
 - no need to port your entire codebase
 
 **Impossible. Or is it?**
@@ -207,7 +206,7 @@ value := s.Set(e, "key", "value").Get(e, "key")
 fmt.Println(value)
 ```
 
-### Enjoy the simplicity and selfdocumenting nature of returned errors
+### Equally robust & self-documenting as returned errors are
 
 Because an error context is passed in, it clearly documents that the function call may result in an error.
 That's equal to returning an error. If, as a caller, you want to handle the error at any level, just
@@ -225,7 +224,7 @@ Note that this approach is not uncontrolled as `panic()`. You can `panic()` anyw
 you can only "throw" errors where an error context is available, which means some codepath is guaranteed
 to be expecting it.
 
-### Faster then returning errors
+### no performance penalty
 
 Checking `if Err != nil { ... }` everywhere has a cost. On my machine, it's 0.25ns per check.
 Setting up an error context has a cost. On my machine, it's around 100ns per context.
