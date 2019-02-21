@@ -24,6 +24,7 @@ all the requirements boxes:
 - no need to actually return the errors
 - faster then returning errors
 - feature parity with the Go v2 error handling draft
+- no need to port your entire codebase
 
 **Impossible. Or is it?**
 
@@ -278,7 +279,22 @@ func Foo(e E, input string) (output string) {
 result := Foo(e, "input")
 ```
 
+### No need to port your entire codebase
+
+If you want to use it within a package (or library), just wrap each entry point in an error context and you can use it internally.
+
+You can equally use it at the top level of your codebase. Lower level packages may return errors, you can always throw them with `e.Throw(Err)`.
+
+Effectively, you can start using it in any well defined area of your code. Create error contexts at the entry points so that you can
+return errors to the callees, and `e.Throw()` your errors inside.
+
 -- End of experimental error contexts. --
+
+
+<br>
+<br>
+<br>
+<br>
 
 ----
 
