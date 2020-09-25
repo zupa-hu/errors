@@ -15,11 +15,19 @@ import (
 // Warning: do not delegate calling .ClientNote(), use it like:
 //   return Err.ClientNote("message")
 func (instance *Instance) ClientNote(msg string) (Error) {
-	skip, pcs := 2, make([]uintptr, 256)
+	skip, pcs := 2, make([]uintptr, MAX_STACK_SIZE)
 	n := runtime.Callers(skip, pcs)
 
 	pos := len(instance.stack) - n
-	instance.stack[pos].clientNote = msg
+
+	// In weird cases, the error may be generated on a concurrent stack, having a shorter stack trace.
+	// Avoid panicing here, check the stack entry exists. If not, use the deep end of the stack.
+	if (pos < 0) || (len(instance.stack) - 1 < pos) {
+		// If the desired stack position does not exist, append info at the deep end of the stack.
+		instance.stack[0].clientNote += "\n" + msg
+	} else {
+		instance.stack[pos].clientNote = msg
+	}
 
 	return instance
 }

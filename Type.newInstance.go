@@ -10,10 +10,10 @@ import (
 // This is an internal method, skip `skip` number of stack entries
 // to ignore stack entries internal to this package.
 func (t Type) newInstance(skip int, internal bool, serverNote, clientNote string) (*Instance) {
-	// Record program counters. This enforces a max stack depth of 256.
+	// Record program counters. This enforces a max stack depth of MAX_STACK_SIZE.
 	// Not a big issue as it is quite big, plus at the time of this writing,
 	// Golang itself imposes a lower limit, 32.
-	pcs := make([]uintptr, 256)
+	pcs := make([]uintptr, MAX_STACK_SIZE)
 	n := runtime.Callers(skip+2, pcs)
 
 	// Record each stack entry in a stackEntry object
